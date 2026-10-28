@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>영상찾기</title>
+<style>
+  :root { --bg: #fafafa; --fg: #1a1a1a; --muted: #6b6b6b; --line: #e3e3e3; --card: #fff; --accent: #2563eb; --active: #e8efff; --mark: #fde68a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141414; --fg: #ececec; --muted: #9a9a9a; --line: #2c2c2c; --card: #1d1d1d; --accent: #60a5fa; --active: #1e2a44; --mark: #854d0e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); height: 100vh; }
+  aside { border-right: 1px solid var(--line); overflow-y: auto; padding: 16px 12px; }
+  aside h1 { font-size: 15px; margin: 0 4px 12px; }
+  .video-item { display: block; width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: 6px; background: none; color: var(--fg); cursor: pointer; font: inherit; }
+  .video-item:hover { background: var(--card); }
+  .video-item.active { background: var(--active); }
+  .video-item .name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .video-item .sub { display: block; color: var(--muted); font-size: 12px; }
+  main { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; padding: 20px; min-height: 0; }
+  .left { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+  video { width: 100%; max-height: 65vh; background: #000; border-radius: 8px; }
+  .meta { color: var(--muted); font-size: 12px; }
+  form { display: flex; gap: 8px; }
+  input { flex: 1; padding: 10px 12px; font-size: 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--fg); }
+  button.primary { padding: 0 16px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-size: 14px; cursor: pointer; }
+  button:disabled, input:disabled { opacity: .5; cursor: default; }
+  .right { overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 20px; }
+  h2 { font-size: 13px; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
+  .row { display: flex; gap: 12px; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+  .row:hover { background: var(--card); }
+  .tc { font-variant-numeric: tabular-nums; color: var(--accent); min-width: 64px; }
+  mark { background: var(--mark); color: inherit; }
+  /* 검색 결과 카드: 썸네일 + 시각, 자막이 있으면 아래 3줄까지. 썸네일은 정사각형 패딩이라 16:9 로 자르면 위아래 검은 띠가 빠진다 */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .card { cursor: pointer; border-radius: 6px; overflow: hidden; background: var(--card); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .card:hover { border-color: var(--accent); }
+  .card img, .card .no-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #000; display: block; }
+  .card .head { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 0; }
+  .card .sub { padding: 2px 8px 6px; font-size: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .empty { color: var(--muted); }
+  .judge { display: inline-flex; gap: 4px; flex: none; }
+  .judge button { border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 4px; padding: 0 6px; font-size: 12px; cursor: pointer; line-height: 20px; }
+  .judge button.on-correct { background: #16a34a; border-color: #16a34a; color: #fff; }
+  .judge button.on-wrong { background: #dc2626; border-color: #dc2626; color: #fff; }
+  .labeling { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .labeling button { border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  /* 평가 도구(✓/✗ · 정답 표시 · 자신 없는 결과)는 켰을 때만 보인다 */
+  body:not(.eval) .judge, body:not(.eval) #labeling, #labeling[hidden] { display: none; }
+  .toggle { display: flex; gap: 6px; align-items: center; margin: 0 4px 12px; cursor: pointer; }
+  details.low { margin-top: 6px; }
+  details.low summary { cursor: pointer; color: var(--muted); font-size: 12px; padding: 4px 10px; }
+  details.low .card { opacity: .75; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+  .tab { border: 0; background: none; color: var(--muted); padding: 8px 12px; font: inherit; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+  .tab-panel { display: flex; flex-direction: column; gap: 20px; }
+  .tab-panel[hidden] { display: none; }
+  .dl { border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 6px; padding: 4px 10px; font-size: 12px; text-decoration: none; }
+  .row.playing { background: var(--active); }
+  .scene-thumb { width: 72px; aspect-ratio: 1; object-fit: contain; background: #000; border-radius: 4px; flex: none; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } .right { overflow: visible; } }
+  @media (max-width: 700px) { .layout { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); max-height: 40vh; } main { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <h1>영상찾기</h1>
+    <label class="meta toggle"><input type="checkbox" id="eval-mode"> 평가 도구 보기</label>
+    <div id="videos" class="empty">불러오는 중…</div>
+  </aside>
+  <main>
+    <section class="left">
+      <video id="player" controls preload="metadata"></video>
+      <div class="meta" id="info">왼쪽에서 영상을 고르세요.</div>
+      <form id="form">
+        <input id="q" placeholder="찾고 싶은 말이나 장면" disabled>
+        <button class="primary" id="submit" disabled>검색</button>
+      </form>
+      <div class="meta" id="status"></div>
+      <div class="labeling" id="labeling" hidden>
+        <span class="meta">정답 표시 (평가용):</span>
+        <button type="button" id="mark-answer">지금 재생 위치가 정답</button>
+        <button type="button" id="mark-none">이 영상엔 정답 없음</button>
+        <span class="meta" id="label-status"></span>
+      </div>
+    </section>
+    <section class="right">
+      <div class="tabs">
+        <button type="button" class="tab active" data-tab="results">검색 결과</button>
+        <button type="button" class="tab" data-tab="analysis">분석 결과</button>
+      </div>
+      <div id="analysis" class="tab-panel" hidden>
+        <div class="labeling" id="analysis-tools">
+          <a id="dl-srt" class="dl" download>자막 SRT 받기</a>
+          <a id="dl-vtt" class="dl" download>자막 VTT 받기</a>
+          <span class="meta" id="analysis-meta"></span>
+        </div>
+        <div id="analysis-scenes-box" hidden><h2>장면 설명</h2><div id="analysis-scenes"></div></div>
+        <div><h2>대사 (받아쓰기)</h2><div id="analysis-lines"></div></div>
+      </div>
+      <div id="results" class="tab-panel">
+      <div id="hits"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const player = $("player");
+let current = null;
+let searchSeq = 0;
+let lastQuery = "";
+let transcriptRows = []; // [{start_ms, end_ms, el}] — 재생 위치 강조용
+let lastData = null; // 마지막 검색 응답 — 평가 도구를 켜고 끌 때 다시 그린다
+const OFFLINE = "서버에 연결할 수 없습니다. vf-server 가 실행 중인지 확인하세요.";
+const evalMode = () => document.body.classList.contains("eval");
+
+async function sendFeedback(body) {
+  if (!current || !lastQuery) return false; // 검색 전에는 무엇에 대한 정답인지 알 수 없다
+  try {
+    const res = await fetch("/api/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ video_id: current.id, query: lastQuery, ...body }),
+    });
+    if (!res.ok) $("label-status").textContent = `기록 실패 (${res.status})`;
+    return res.ok;
+  } catch {
+    $("label-status").textContent = `기록 실패 · ${OFFLINE}`;
+    return false;
+  }
+}
+
+// 결과 하나에 ✓/✗ 버튼. 누른 쪽을 색으로 표시한다 (다시 눌러도 기록은 추가로 남는다 — 마지막 표시가 유효).
+function judgeButtons(hits) {
+  const box = document.createElement("span");
+  box.className = "judge";
+  for (const [label, text] of [["correct", "✓"], ["wrong", "✗"]]) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = text;
+    btn.title = label === "correct" ? "맞음" : "틀림";
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      const results = await Promise.all(hits.map((hit) => sendFeedback({ label, kind: hit.kind, start_ms: hit.start_ms, end_ms: hit.end_ms, score: hit.score })));
+      if (!results.every(Boolean)) return;
+      for (const b of box.children) b.className = "";
+      btn.className = `on-${label}`;
+    };
+    box.appendChild(btn);
+  }
+  return box;
+}
+
+function tc(ms) {
+  const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, sec = s % 60;
+  const mmss = `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  return h ? `${h}:${mmss}` : mmss;
+}
+
+function esc(text) {
+  return text.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function highlight(text, query) {
+  let html = esc(text);
+  for (const word of query.split(/\s+/).filter(Boolean)) {
+    const re = new RegExp(esc(word).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    html = html.replace(re, (m) => `<mark>${m}</mark>`);
+  }
+  return html;
+}
+
+function seek(ms) {
+  player.currentTime = ms / 1000;
+  player.play();
+}
+
+function clearResults() {
+  lastData = null;
+  $("hits").innerHTML = "";
+  $("status").textContent = "";
+  $("labeling").hidden = true;
+  $("label-status").textContent = "";
+}
+
+function renderList(videos) {
+  const list = $("videos");
+  if (!videos.length) {
+    list.textContent = "색인된 영상이 없습니다. vf-index <영상 파일> 로 추가하세요.";
+    return;
+  }
+  list.className = "";
+  list.innerHTML = "";
+  for (const v of videos) {
+    const item = document.createElement("button");
+    item.className = "video-item";
+    item.dataset.id = v.id;
+    item.innerHTML = `<span class="name">${esc(v.name)}</span><span class="sub">${tc(v.duration_ms)} · 발화 ${v.speech_segments} · 화면 ${v.shots}</span>`;
+    item.onclick = () => select(v);
+    list.appendChild(item);
+  }
+}
+
+function select(video) {
+  current = video;
+  lastQuery = "";
+  searchSeq++;
+  for (const el of document.querySelectorAll(".video-item")) el.classList.toggle("active", el.dataset.id === video.id);
+  player.src = `/api/videos/${video.id}/stream`;
+  $("info").textContent = `${video.name} · ${tc(video.duration_ms)} · 발화 ${video.speech_segments}개 · 화면 ${video.shots}개`;
+  $("q").disabled = $("submit").disabled = false;
+  $("q").value = "";
+  $("q").focus();
+  clearResults();
+  loadAnalysis(video);
+  history.replaceState(null, "", `#${video.id}`);
+}
+
+async function loadAnalysis(video) {
+  $("dl-srt").href = `/api/videos/${video.id}/subtitles.srt`;
+  $("dl-vtt").href = `/api/videos/${video.id}/subtitles.vtt`;
+  const lines = $("analysis-lines");
+  const scenes = $("analysis-scenes");
+  lines.innerHTML = '<span class="empty">불러오는 중…</span>';
+  scenes.innerHTML = "";
+  transcriptRows = [];
+  let res;
+  try {
+    res = await fetch(`/api/videos/${video.id}/transcript`);
+  } catch {
+    if (current === video) lines.innerHTML = `<span class="empty">${OFFLINE}</span>`;
+    return;
+  }
+  if (current !== video) return;
+  if (!res.ok) {
+    lines.innerHTML = `<span class="empty">불러오기 실패 (${res.status})</span>`;
+    return;
+  }
+  const data = await res.json();
+  $("analysis-meta").textContent = `대사 ${data.segments.length}개${data.scenes.length ? ` · 장면 설명 ${data.scenes.length}개` : ""}`;
+  lines.innerHTML = data.segments.length ? "" : '<span class="empty">받아쓴 대사가 없습니다 (음성이 없거나 음악·효과음만 있는 영상).</span>';
+  for (const seg of data.segments) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span class="tc">${tc(seg.start_ms)}</span><span style="flex:1">${esc(seg.text)}</span>`;
+    row.onclick = () => seek(seg.start_ms);
+    lines.appendChild(row);
+    transcriptRows.push({ start_ms: seg.start_ms, end_ms: seg.end_ms, el: row });
+  }
+  $("analysis-scenes-box").hidden = !data.scenes.length;
+  for (const sc of data.scenes) {
+    const row = document.createElement("div");
+    row.className = "row";
+    const textLines = sc.text.split("\n");
+    row.innerHTML = `<img class="scene-thumb" loading="lazy" src="/api/videos/${video.id}/thumbs/${sc.start_ms}.jpg" alt=""><span class="tc">${tc(sc.start_ms)}</span><span style="flex:1">${esc(textLines[textLines.length - 1])}</span>`;
+    row.onclick = () => seek(sc.start_ms);
+    scenes.appendChild(row);
+  }
+}
+
+// 재생 중인 대사를 강조하고, 분석 결과 탭이 열려 있으면 보이게 스크롤한다
+let playingRow = null;
+player.addEventListener("timeupdate", () => {
+  const ms = player.currentTime * 1000;
+  const hit = transcriptRows.find((r) => r.start_ms <= ms && ms < r.end_ms);
+  const el = hit ? hit.el : null;
+  if (el === playingRow) return;
+  if (playingRow) playingRow.classList.remove("playing");
+  playingRow = el;
+  if (el) {
+    el.classList.add("playing");
+    if (!$("analysis").hidden) el.scrollIntoView({ block: "nearest" });
+  }
+});
+
+for (const tab of document.querySelectorAll(".tab")) {
+  tab.onclick = () => {
+    for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
+    $("results").hidden = tab.dataset.tab !== "results";
+    $("analysis").hidden = tab.dataset.tab !== "analysis";
+  };
+}
+
+async function search(query) {
+  const video = current;
+  const seq = ++searchSeq;
+  $("status").textContent = "검색 중…";
+  let res;
+  try {
+    res = await fetch(`/api/videos/${video.id}/search?q=${encodeURIComponent(query)}&k=8`);
+  } catch {
+    if (seq === searchSeq) $("status").textContent = OFFLINE;
+    return;
+  }
+  if (seq !== searchSeq) return; // 그 사이 다른 영상을 고르거나 새로 검색함
+  if (!res.ok) {
+    $("status").textContent = `검색 실패 (${res.status})`;
+    return;
+  }
+  const data = await res.json();
+  lastQuery = query;
+  document.querySelector('.tab[data-tab="results"]').click();
+  $("labeling").hidden = false;
+  $("label-status").textContent = "";
+  $("status").textContent = data.mode === "exact"
+    ? `${data.elapsed_ms}ms · 짧은 검색어라 말은 자막에 그대로 있는 곳만 찾습니다`
+    : `${data.elapsed_ms}ms`;
+  lastData = { video, data, query };
+  renderHits(video, data, query);
+}
+
+// 평가 도구는 브라우저에 기억해 둔다 (기본은 끔)
+$("eval-mode").onchange = () => {
+  document.body.classList.toggle("eval", $("eval-mode").checked);
+  try { localStorage.setItem("evalMode", $("eval-mode").checked ? "1" : ""); } catch {}
+  if (lastData) renderHits(lastData.video, lastData.data, lastData.query);
+};
+try {
+  $("eval-mode").checked = localStorage.getItem("evalMode") === "1";
+} catch {}
+document.body.classList.toggle("eval", $("eval-mode").checked);
+
+const SOURCES = { gesture: "gestures", speech: "speech", scene: "scenes", shot: "shots" }; // 결과 종류 → 응답 필드
+const MERGE_MS = 5000; // 이 안에 있는 결과는 같은 시점으로 보고 카드 하나로 묶는다
+
+// 발화·화면·장면 설명·몸짓 결과를 시점별 목록 하나로 합친다.
+// 점수는 모델마다 달라 비교할 수 없으니, 검색어 종류에 맞는 출처를 먼저 놓고 출처 안에서는 서버 순위를 따른다.
+function mergeHits(data) {
+  const order = data.intent === "gesture" ? ["gesture", "scene", "shot", "speech"]
+    : data.intent === "visual" ? ["scene", "shot", "speech"]
+    : ["speech", "scene", "shot"];
+  const groups = { sure: [], low: [] };
+  for (const kind of order) {
+    for (const hit of data[SOURCES[kind]]) {
+      const tier = kind !== "gesture" && hit.low ? groups.low : groups.sure;
+      const near = tier.find((g) => Math.abs(g.start_ms - hit.start_ms) <= MERGE_MS);
+      if (near) near.hits.push({ ...hit, kind });
+      else tier.push({ start_ms: hit.start_ms, hits: [{ ...hit, kind }] });
+    }
+  }
+  return groups;
+}
+
+// 결과 하나 = 썸네일 + 시각 카드. 출처 표시와 장면 설명·몸짓 글은 두지 않고, 자막이 있으면 아래에 쓴다.
+function hitCard(video, group, query) {
+  const card = document.createElement("div");
+  card.className = "card";
+  const thumb = group.hits.find((h) => h.thumb); // 첫 결과가 카드 시각을 정하므로 그 썸네일을 우선 쓴다
+  const speech = group.hits.find((h) => h.kind === "speech");
+  card.innerHTML = (thumb ? `<img loading="lazy" src="/api/videos/${video.id}/thumbs/${encodeURIComponent(thumb.thumb)}" alt="">` : '<div class="no-thumb"></div>')
+    + `<div class="head"><span class="tc">${tc(group.start_ms)}</span></div>`
+    + (speech ? `<span class="sub">${highlight(speech.text, query)}</span>` : "");
+  card.querySelector(".head").appendChild(judgeButtons(group.hits));
+  card.onclick = () => seek(group.start_ms);
+  return card;
+}
+
+function hitGrid(video, groups, query) {
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  for (const group of groups) grid.appendChild(hitCard(video, group, query));
+  return grid;
+}
+
+function renderHits(video, data, query) {
+  const box = $("hits");
+  box.innerHTML = "";
+  const { sure, low } = mergeHits(data);
+  if (!sure.length && !low.length) {
+    box.innerHTML = '<span class="empty">찾은 곳이 없습니다.</span>';
+    return;
+  }
+  // 짧은 검색어(자막 그대로 일치)는 시간순이 읽기 쉽다
+  if (data.mode === "exact") sure.sort((a, b) => a.start_ms - b.start_ms);
+  if (sure.length) box.appendChild(hitGrid(video, sure, query));
+  if (!low.length) return;
+  if (evalMode()) {
+    // 평가 때는 자신 없는 결과도 ✓/✗ 를 남길 수 있게 접어서 보여준다
+    const fold = document.createElement("details");
+    fold.className = "low";
+    fold.innerHTML = `<summary>자신 없는 결과 ${low.length}개</summary>`;
+    fold.appendChild(hitGrid(video, low, query));
+    fold.open = !sure.length; // 확실한 결과가 없으면 펼친다
+    box.appendChild(fold);
+  } else if (!sure.length) {
+    // 평소에는 자신 없는 결과를 빼되, 확실한 결과가 하나도 없으면 빈 화면 대신 보여준다
+    box.innerHTML = '<span class="empty">확실한 결과가 없어 자신 없는 결과를 보여줍니다.</span>';
+    box.appendChild(hitGrid(video, low, query));
+  }
+}
+
+$("mark-answer").onclick = async () => {
+  const ms = Math.round(player.currentTime * 1000);
+  if (await sendFeedback({ label: "answer", start_ms: ms, end_ms: ms })) {
+    $("label-status").textContent = `정답 기록: ${tc(ms)} ("${lastQuery}")`;
+  }
+};
+
+$("mark-none").onclick = async () => {
+  if (await sendFeedback({ label: "none" })) {
+    $("label-status").textContent = `정답 없음 기록 ("${lastQuery}")`;
+  }
+};
+
+$("form").onsubmit = (e) => {
+  e.preventDefault();
+  const q = $("q").value.trim();
+  if (q && current) search(q);
+};
+
+player.onerror = () => {
+  $("info").textContent += " · 영상을 불러올 수 없습니다 (원본 파일이 옮겨졌을 수 있음)";
+};
+
+fetch("/api/videos").then((r) => r.json(), () => null).then((videos) => {
+  if (!videos) {
+    $("videos").textContent = OFFLINE;
+    return;
+  }
+  renderList(videos);
+  const fromHash = videos.find((v) => v.id === location.hash.slice(1));
+  if (fromHash) select(fromHash);
+});
+</script>
+</body>
+</html>
