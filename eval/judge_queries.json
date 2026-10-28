@@ -1,0 +1,133 @@
+{
+ "_guide": "vf-judge 질의 목록. 영상을 보지 않고 일반적인 검색어로 작성 (Tears of Steel 은 공개 줄거리 참고). 정답은 AI 채점이 판정.",
+ "queries": [
+  {
+   "video": "328253280a05e6b1",
+   "query": "총 쏘는 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "로봇이 나오는 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "두 사람이 대화하는 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "키스하는 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "폭발 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "다리 위에 서 있는 사람"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "컴퓨터 화면을 보는 사람"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "안경 쓴 남자"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "a giant robot"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "people running"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "강아지가 뛰어노는 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "눈 내리는 장면"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "헤어지자는 말"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "사과하는 말"
+  },
+  {
+   "video": "328253280a05e6b1",
+   "query": "작전을 설명하는 말"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "칠판에 그래프를 그리는 장면"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "선생님이 두 손을 든 모습"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "칠판을 가리키는 장면"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "선생님이 정면을 보고 말하는 모습"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "자동차가 달리는 장면"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "꼭짓점 구하는 법"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "아래로 볼록"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "그래프 그리는 앱"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "이차항 계수의 절댓값이 클수록"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "오늘 저녁 메뉴"
+  },
+  {
+   "video": "a125b0de967b562a",
+   "query": "강아지 키우는 이야기"
+  },
+  {
+   "video": "9e3a1adccdc35594",
+   "query": "토끼"
+  },
+  {
+   "video": "9e3a1adccdc35594",
+   "query": "나비가 날아가는 장면"
+  },
+  {
+   "video": "9e3a1adccdc35594",
+   "query": "사과가 떨어지는 장면"
+  },
+  {
+   "video": "9e3a1adccdc35594",
+   "query": "나무가 있는 숲"
+  },
+  {
+   "video": "9e3a1adccdc35594",
+   "query": "새가 나는 장면"
+  },
+  {
+   "video": "9e3a1adccdc35594",
+   "query": "자동차"
+  }
+ ]
+}

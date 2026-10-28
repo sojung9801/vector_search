@@ -1,0 +1,22 @@
+{
+  "_guide": [
+    "videos: 별칭 → 프로젝트 루트 기준 영상 경로",
+    "queries[].target: speech(발화) | shots(화면) | any(둘 중 하나라도)",
+    "queries[].answers: 정답 구간 [시작, 끝] 목록 (mm:ss 또는 h:mm:ss). 결과 시작 시각이 구간 ±3초 안이면 정답",
+    "queries[].answers 가 [] 이면 '없는 장면/말' 질의 — 결과가 0개여야 통과",
+    "아래 질의와 정답은 예시 자리입니다. 영상을 보고 직접 채워 주세요."
+  ],
+  "videos": {
+    "lecture": "test_videos/34696_20260626-ec3027e5e7d3d6e8.mp4",
+    "sample": "test_videos/SampleVideo_1280x720_5mb.mp4",
+    "voice15s": "test_videos/음성이 있는 파일 복사본 4.mp4",
+    "tears": "test_videos/tears_of_steel_1080p.webm"
+  },
+  "queries": [
+    { "video": "tears", "query": "여기에 화면 질의", "target": "shots", "answers": [["00:00", "00:00"]] },
+    { "video": "tears", "query": "여기에 발화 질의", "target": "speech", "answers": [["00:00", "00:00"]] },
+    { "video": "tears", "query": "여기에 영어 질의", "target": "any", "answers": [["00:00", "00:00"]] },
+    { "video": "tears", "query": "영상에 없는 장면", "target": "shots", "answers": [] },
+    { "video": "lecture", "query": "영상에 없는 말", "target": "speech", "answers": [] }
+  ]
+}
