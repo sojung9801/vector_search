@@ -1,0 +1,253 @@
+{
+ "schema_version": 1,
+ "models": [
+  {
+   "key": "asr",
+   "repo": "mlx-community/whisper-large-v3-turbo",
+   "role": "음성인식 (한국어·영어·일본어, 창별 언어 감지)",
+   "license": "MIT (원본 openai/whisper-large-v3-turbo; MLX 변환본 카드에는 표기 없음)",
+   "license_url": "https://huggingface.co/openai/whisper-large-v3-turbo",
+   "grade": "상업 사용 가능",
+   "required": true,
+   "source": "huggingface",
+   "revision": "a4aaeec0636e6fef84abdcbe3544cb2bf7e9f6fb",
+   "files": [
+    {
+     "path": "config.json",
+     "size": 268,
+     "sha256": null,
+     "git_sha1": "6ac9a52a28f70a2e5681c250a470eca6e9c8cc3e"
+    },
+    {
+     "path": "weights.safetensors",
+     "size": 1613977612,
+     "sha256": "951ed3fc1203e6a62467abb2144a96ce7eafca8fa77e3704fdb8635ff3e7f8a6",
+     "git_sha1": null
+    }
+   ]
+  },
+  {
+   "key": "text",
+   "repo": "intfloat/multilingual-e5-base",
+   "role": "발화·OCR 텍스트 임베딩 (교차언어 의미 검색)",
+   "license": "MIT",
+   "license_url": "https://huggingface.co/intfloat/multilingual-e5-base",
+   "grade": "상업 사용 가능",
+   "required": true,
+   "source": "huggingface",
+   "revision": "d128750597153bb5987e10b1c3493a34e5a4502a",
+   "files": [
+    {
+     "path": "1_Pooling/config.json",
+     "size": 200,
+     "sha256": null,
+     "git_sha1": "2a824fa43c359360ecddb16808b539c6be892fef"
+    },
+    {
+     "path": "config.json",
+     "size": 694,
+     "sha256": null,
+     "git_sha1": "2b827c7eb80b3765ec6f465ab7cbfe173388c9dc"
+    },
+    {
+     "path": "model.safetensors",
+     "size": 1112201288,
+     "sha256": "a18a44fad1d0b46ded15928144138cff1135d5cc8233bdd90be5f18822de09a7",
+     "git_sha1": null
+    },
+    {
+     "path": "modules.json",
+     "size": 387,
+     "sha256": null,
+     "git_sha1": "ac2039abdf6ff023b27c919bb9675cfe378cb10f"
+    },
+    {
+     "path": "sentence_bert_config.json",
+     "size": 57,
+     "sha256": null,
+     "git_sha1": "4eca68d85ecd3034cf4174d8a4033a75344ea62d"
+    },
+    {
+     "path": "sentencepiece.bpe.model",
+     "size": 5069051,
+     "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+     "git_sha1": null
+    },
+    {
+     "path": "special_tokens_map.json",
+     "size": 280,
+     "sha256": null,
+     "git_sha1": "d5698132694f4f1bcff08fa7d937b1701812598e"
+    },
+    {
+     "path": "tokenizer.json",
+     "size": 17082660,
+     "sha256": "62c24cdc13d4c9952d63718d6c9fa4c287974249e16b7ade6d5a85e7bbb75626",
+     "git_sha1": null
+    },
+    {
+     "path": "tokenizer_config.json",
+     "size": 418,
+     "sha256": null,
+     "git_sha1": "6de1940d16d38be9877bf7cc228c9377841b311f"
+    }
+   ]
+  },
+  {
+   "key": "vad",
+   "role": "음성 구간 감지 (Silero VAD)",
+   "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+   "revision": "sherpa-onnx-asr-models-release",
+   "license": "MIT (snakers4/silero-vad)",
+   "license_url": "https://github.com/snakers4/silero-vad/blob/master/LICENSE",
+   "grade": "상업 사용 가능",
+   "required": true,
+   "source": "url",
+   "files": [
+    {
+     "path": "silero_vad.onnx",
+     "size": 643854,
+     "sha256": "9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6",
+     "git_sha1": null,
+     "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx"
+    }
+   ]
+  },
+  {
+   "key": "siglip",
+   "repo": "google/siglip2-base-patch16-256",
+   "role": "화면 검색 (다국어 질의 ↔ 프레임, 시그모이드 확률로 없는 장면 걸러냄)",
+   "license": "Apache-2.0",
+   "license_url": "https://huggingface.co/google/siglip2-base-patch16-256",
+   "grade": "상업 사용 가능",
+   "required": true,
+   "source": "huggingface",
+   "revision": "3f9f96cb90da5dbc758b01813f2f6f1aee24c1ab",
+   "files": [
+    {
+     "path": "config.json",
+     "size": 276,
+     "sha256": null,
+     "git_sha1": "b0a6b7804332a660ed5d6c2707b39bed80192010"
+    },
+    {
+     "path": "model.safetensors",
+     "size": 1500985224,
+     "sha256": "6125cacc01fa93bdc98a0c5101cefcd69b2ed1f8ab4f38d86f4ad5984f5dc863",
+     "git_sha1": null
+    },
+    {
+     "path": "preprocessor_config.json",
+     "size": 394,
+     "sha256": null,
+     "git_sha1": "130986149eee6a6fd9a2eb53da12fbc1a415c0e6"
+    },
+    {
+     "path": "special_tokens_map.json",
+     "size": 636,
+     "sha256": null,
+     "git_sha1": "8d6368f7e735fbe4781bf6e956b7c6ad0586df80"
+    },
+    {
+     "path": "tokenizer.json",
+     "size": 34363039,
+     "sha256": "cb9140fae3ac5122c972d37adf83e1248471a38147ad76f8215c8872c6fd8322",
+     "git_sha1": null
+    },
+    {
+     "path": "tokenizer_config.json",
+     "size": 47164,
+     "sha256": null,
+     "git_sha1": "d97c5412159422c3b56fbc99076b1dcc25dd7856"
+    }
+   ]
+  },
+  {
+   "key": "rerank",
+   "repo": "BAAI/bge-reranker-v2-m3",
+   "role": "발화 검색 재정렬 (질의·문장 쌍 판정, 관련 없는 결과 걸러냄)",
+   "license": "Apache-2.0",
+   "license_url": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+   "grade": "상업 사용 가능",
+   "required": true,
+   "source": "huggingface",
+   "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+   "files": [
+    {
+     "path": "config.json",
+     "size": 795,
+     "sha256": null,
+     "git_sha1": "9f62673cb00ec41dcec8947b9ed16f6f2eb23ba2"
+    },
+    {
+     "path": "model.safetensors",
+     "size": 2271071852,
+     "sha256": "d9e3e081faff1eefb84019509b2f5558fd74c1a05a2c7db22f74174fcedb5286",
+     "git_sha1": null
+    },
+    {
+     "path": "sentencepiece.bpe.model",
+     "size": 5069051,
+     "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+     "git_sha1": null
+    },
+    {
+     "path": "special_tokens_map.json",
+     "size": 964,
+     "sha256": null,
+     "git_sha1": "b1879d702821e753ffe4245048eee415d54a9385"
+    },
+    {
+     "path": "tokenizer.json",
+     "size": 17098273,
+     "sha256": "69564b696052886ed0ac63fa393e928384e0f8caada38c1f4864a9bfbf379c15",
+     "git_sha1": null
+    },
+    {
+     "path": "tokenizer_config.json",
+     "size": 1173,
+     "sha256": null,
+     "git_sha1": "328a00a9a560aadcf2a3064f917517359eb3cc26"
+    }
+   ]
+  },
+  {
+   "key": "face_detect",
+   "role": "얼굴 찾기 (OpenCV Zoo YuNet, 사람 단위 분석 실험)",
+   "revision": "opencv_zoo-48b10fa505ae",
+   "license": "MIT (opencv_zoo/models/face_detection_yunet)",
+   "license_url": "https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet",
+   "grade": "상업 사용 가능",
+   "required": false,
+   "source": "url",
+   "files": [
+    {
+     "path": "face_detection_yunet_2023mar.onnx",
+     "size": 232589,
+     "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+     "git_sha1": null,
+     "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/48b10fa505aeb51fbd127fc60a5c660040e823b7/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
+    }
+   ]
+  },
+  {
+   "key": "face_embed",
+   "role": "얼굴 대조 (OpenCV Zoo SFace, 등록 인물 식별 실험 — 서비스화 전 생체정보 법무 검토 필요)",
+   "revision": "opencv_zoo-48b10fa505ae",
+   "license": "Apache-2.0 (opencv_zoo/models/face_recognition_sface)",
+   "license_url": "https://github.com/opencv/opencv_zoo/tree/main/models/face_recognition_sface",
+   "grade": "상업 사용 가능",
+   "required": false,
+   "source": "url",
+   "files": [
+    {
+     "path": "face_recognition_sface_2021dec.onnx",
+     "size": 38696353,
+     "sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79",
+     "git_sha1": null,
+     "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/48b10fa505aeb51fbd127fc60a5c660040e823b7/models/face_recognition_sface/face_recognition_sface_2021dec.onnx"
+    }
+   ]
+  }
+ ]
+}

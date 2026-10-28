@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.pytest_cache/
+.DS_Store
+vendor/ffmpeg/
+vendor/
+test_videos/
+eval/reference/
+eval/feedback.jsonl
